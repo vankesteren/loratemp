@@ -1,0 +1,14 @@
+chrome.sys = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe'
+
+launch.browser = function(appUrl, browser.path=chrome.sys) {
+    browser.path = chartr('/', '\\', browser.path)
+    message('Browser path: ', browser.path)
+
+    CMD = browser.path
+    ARGS = sprintf('--app="%s"', appUrl)
+
+    system2(CMD, args=ARGS, wait=FALSE)
+    NULL
+}
+
+shiny::runApp(launch.browser = launch.browser)
