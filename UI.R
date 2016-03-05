@@ -11,6 +11,8 @@ footer = "(c) Erik-Jan van Kesteren",
 fluidRow(
   column(8, offset = 2,
          h1("Data from LoRa Sensor", align = "center"),
+         h6(textOutput("battery"),
+            align = "center"),
          br(),
          hr(),
          br()
@@ -19,23 +21,23 @@ fluidRow(
 
 fluidRow(
 
-  # Checkbox
-  column(2,
-        sidebarPanel(
-          checkboxInput("update", "Automatically Update Data", value = T),
-          conditionalPanel("input.update == 1",
-                           h6("Data is updated every 10 seconds",
-                              align = "center")
-                           ),
-          width = 12
-        )
-  ),
+  # # Checkbox
+  # column(2,
+  #       sidebarPanel(
+  #         checkboxInput("battery", "Check Battery", value = F),
+  #         conditionalPanel("input.battery == 1",
+  #                          h6(textOutput("battery"),
+  #                             align = "center")
+  #                         ),
+  #         width = 12
+  #       )
+  # ),
 
   # Plot
-  column(5,
+  column(6,
          plotlyOutput("temp")
   ),
-  column(5,
+  column(6,
         plotlyOutput("humid")
   )
 
