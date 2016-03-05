@@ -1,22 +1,18 @@
 shinyServer(function(input, output, session) {
 
   # Refresh the data every 5 seconds
-  autoInvalidate <- reactiveTimer(5000, session)
+  timer <- reactive({
+    if (input$update == 1){
+      autoInvalidate <- reactiveTimer(10000, session)
+    }
+    else {
+      autoInvalidate <- reactiveTimer(99999999, session)
+    }
+  })
+
+  autoInvalidate <- reactiveTimer(10000, session)
 
 
-  dataInput <- reactive({
-    # Data refresh
-    autoInvalidate()
-
-    # Get the data from the things network api
-    temp <- fromJSON("http://thethingsnetwork.org/api/v0/nodes/02030512/")
-
-    # Parse dataset
-    ar <- strsplit(temp$data_plain, split = ", ")
-    th <- matrix(as.numeric(unlist(ar)), ncol = 2, byrow = T)
-    tm <- strptime(temp$time, format = "%Y-%m-%dT%H:%M:%S", tz = "UTC") + 3600
-
-    })
   # I use Plotly to draw the interactive table
   output$temp <- renderPlotly({
 
@@ -27,7 +23,7 @@ shinyServer(function(input, output, session) {
 
     # Parse dataset
     ar <- strsplit(temp$data_plain, split = ", ")
-    th <- matrix(as.numeric(unlist(ar)), ncol = 2, byrow = T)
+    th <- matrix(as.numeric(unlist(ar)), ncol = 3, byrow = T)
     tm <- strptime(temp$time, format = "%Y-%m-%dT%H:%M:%S", tz = "UTC") + 3600
 
 
