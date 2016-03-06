@@ -90,20 +90,24 @@ void setup()
 
 void loop()
 {
-  debugSerial.println();
-  debugSerial.println("Gathering data...");
-
-  // Double check that lora antenna is turned on
-  digitalWrite(BEE_VCC, HIGH);
+  if (debugSerial){
+    debugSerial.println();
+    debugSerial.println("Gathering data...");
+  };
   
   // Gather data 
-  // String reading = THRead(50, 1000);
+  // String reading = THRead(50, 1000); // runs about 1 minute
   String reading = THRead(50, 8900); // runs for ~7.5 minutes
   reading += ", " + String(getRealBatteryVoltageMV());
-
+  
+  // Double check that lora antenna is turned on
+  digitalWrite(BEE_VCC, HIGH); // because it tends to turn off if data gathering takes too long
+  
   // Print Debug before sending
-  debugSerial.println("Sending payload: Humidity, Temperature, Voltage");
-  debugSerial.println(reading);    
+  if (debugSerial){
+    debugSerial.println("Sending payload: Humidity, Temperature, Voltage");
+    debugSerial.println(reading);    
+  };
 
   // Send the data
 	sendData(reading, 0);
@@ -111,7 +115,7 @@ void loop()
    
   // Delay between readings
   // 60 000 = 1 minute
-	delay(1000);
+	// delay(1000); // not necessary if the data gathering takes long
 	  
  };
 
@@ -178,12 +182,16 @@ void blinkLED(int n, int ms){
 void setupNetwork(){
     if (LoRaBee.initABP(loraSerial, devAddr, appSKey, nwkSKey, false))
   {
-    debugSerial.println("Connection to the network was successful.");
+    if (debugSerial){
+      debugSerial.println("Connection to the network was successful.");
+    };
     blinkLED(3, 500);
   }
   else
   {
-    debugSerial.println("Connection to the network failed!");
+    if (debugSerial){
+      debugSerial.println("Connection to the network failed!");
+    };
     blinkLED(6, 250);
   }
 };
@@ -202,16 +210,22 @@ void sendData(String reading, int errors){
   switch (LoRaBee.send(1, (uint8_t*)reading.c_str(), reading.length()))
     {
     case NoError:
-      debugSerial.println("Successful transmission.");
+      if (debugSerial){
+        debugSerial.println("Successful transmission.");
+      };
       blinkLED(2,200);
       break;
     case NoResponse:
-      debugSerial.println("There was no response from the device.");
+      if (debugSerial){
+        debugSerial.println("There was no response from the device.");
+      };
       break;
     case Timeout:
-      debugSerial.println("Connection timed-out. Check your serial connection to the device! Sleeping for 20sec.");
       errors++;
-      debugSerial.println(errors);
+      if (debugSerial){
+        debugSerial.println("Connection timed-out. Check your serial connection to the device! Retry after 20sec.");
+        debugSerial.println(errors);
+      };
       delay(20000);
       if (errors < 10) 
         sendData(reading, errors);
@@ -219,21 +233,27 @@ void sendData(String reading, int errors){
         resetFunc();
       break;
     case PayloadSizeError:
-      debugSerial.println("The size of the payload is greater than allowed. Transmission failed!");
       errors++;
-      debugSerial.println(errors);
+      if (debugSerial){
+        debugSerial.println("The size of the payload is greater than allowed. Transmission failed!");
+        debugSerial.println(errors);
+      };
       break;
     case InternalError:
-      debugSerial.println("Oh No! This shouldn't happen. Something is really wrong! Try restarting the device!\r\nThe program will now halt.");
       errors++;
-      debugSerial.println(errors);
+      if (debugSerial){
+        debugSerial.println("Oh No! This shouldn't happen. Something is really wrong! Try restarting the device!\r\nThe device will now restart.");
+        debugSerial.println(errors);
+      };
       // while (1) {}; // pause without resetting
       resetFunc();
       break;
     case Busy:
-      debugSerial.println("The device is busy. Sleeping for 10 extra seconds.");
       errors++;
-      debugSerial.println(errors);
+      if (debugSerial){
+        debugSerial.println("The device is busy. Retry after 10 extra seconds.");
+        debugSerial.println(errors);
+      };
       delay(10000);
       if (errors < 10) 
         sendData(reading, errors);
@@ -241,23 +261,29 @@ void sendData(String reading, int errors){
         resetFunc();
       break;
     case NetworkFatalError:
-      debugSerial.println("There is a non-recoverable error with the network connection. You should re-connect.\r\nThe program will now halt.");
       errors++;
-      debugSerial.println(errors);
+      if (debugSerial){
+        debugSerial.println("There is a non-recoverable error with the network connection. You should re-connect.\r\nThe program will now halt.");
+        debugSerial.println(errors);
+      };
       // while (1) {}; // pause without resetting
       resetFunc();
       break;
     case NotConnected:
-      debugSerial.println("The device is not connected to the network. Please connect to the network before attempting to send data.\r\nThe program will now halt.");
       errors++;
-      debugSerial.println(errors);
+      if (debugSerial){
+        debugSerial.println("The device is not connected to the network. Please connect to the network before attempting to send data.\r\nThe program will now halt.");
+        debugSerial.println(errors);
+      };
       // while (1) {}; // pause without resetting
       resetFunc();
       break;
     case NoAcknowledgment:
-      debugSerial.println("There was no acknowledgment sent back!");
       errors++;
-      debugSerial.println(errors);
+      if (debugSerial){
+        debugSerial.println("There was no acknowledgment sent back!");
+        debugSerial.println(errors);
+      };
       delay(10000);
       if (errors < 10) 
         sendData(reading, errors);
@@ -271,7 +297,8 @@ void sendData(String reading, int errors){
 
 // ----------------------------------------------------------------------
 
-void resetFunc(){ // Restarts program from beginning but does not reset the peripherals and registers
+void resetFunc(){ // Reset the Autonomo
+  debugSerial.println("Device reset initiated.");
   __DSB();
   SCB->AIRCR  = 0x05FA0004;
   __DSB();

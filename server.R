@@ -81,11 +81,11 @@ shinyServer(function(input, output, session) {
 
     if (th[1,3] > 4200){
       return(paste("Battery Full: ", as.character(th[1,3]), " Volts"))
-    } else if (th[1,3] > 4000){
-      return(paste("Battery Good: ", as.character(th[1,3]), " Volts"))
     } else if (th[1,3] > 3700){
+      return(paste("Battery Good: ", as.character(th[1,3]), " Volts"))
+    } else if (th[1,3] > 3600){
       return(paste("Battery O.K.: ", as.character(th[1,3]), " Volts"))
-    } else if (th[1,3] > 3400){
+    } else if (th[1,3] > 3500){
       return(paste("Battery Low: ", as.character(th[1,3]), " Volts"))
     } else {
       return(paste("Battery Very Low: ", as.character(th[1,3]), " Volts"))
