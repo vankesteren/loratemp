@@ -13,26 +13,22 @@ fluidRow(
          h1("Data from LoRa Sensor", align = "center"),
          h6(textOutput("battery"),
             align = "center"),
-         br(),
+         fluidRow(
+           column(6, offset = 3,
+             checkboxInput("battery", NULL, value = F),
+             conditionalPanel("input.battery == 1",
+                              plotlyOutput("voltage",
+                                           width = "80%",
+                                           height = 170)
+                              )
+             )
+           ),
          hr(),
          br()
         )
 ),
 
 fluidRow(
-
-  # # Checkbox
-  # column(2,
-  #       sidebarPanel(
-  #         checkboxInput("battery", "Check Battery", value = F),
-  #         conditionalPanel("input.battery == 1",
-  #                          h6(textOutput("battery"),
-  #                             align = "center")
-  #                         ),
-  #         width = 12
-  #       )
-  # ),
-
   # Plot
   column(6,
          plotlyOutput("temp")
@@ -41,6 +37,17 @@ fluidRow(
         plotlyOutput("humid")
   )
 
-)
+),
 
+fluidRow(
+  column(8, offset = 2,
+          br(),
+          hr(),
+          br(),
+          h6("(c) Erik-Jan van Kesteren", align = "center")
+    )
+
+  ),
+
+tags$script(src = 'center.js')
 ))
