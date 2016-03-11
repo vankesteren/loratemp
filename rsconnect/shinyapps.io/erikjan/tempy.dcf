@@ -1,8 +1,8 @@
 name: tempy
 account: erikjan
 server: shinyapps.io
-bundleId: 388066
+bundleId: 388938
 url: https://erikjan.shinyapps.io/tempy/
-when: 1457178887.84819
+when: 1457308445.04823
 asMultiple: FALSE
 asStatic: FALSE

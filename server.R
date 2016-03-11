@@ -6,9 +6,9 @@ shinyServer(function(input, output, session) {
     temp <- fromJSON("http://thethingsnetwork.org/api/v0/nodes/02030592/")
 
     # Parse dataset
-    ar <- strsplit(temp$data_plain, split = ", ")
+    ar <- strsplit(temp[!is.na(temp$data_plain),]$data_plain, split = ", ")
     df <- as.data.frame(matrix(as.numeric(unlist(ar)), ncol = 3, byrow = T))
-    df$tm <- strptime(temp$time, format = "%Y-%m-%dT%H:%M:%S", tz = "UTC") + 3600
+    df$tm <- strptime(temp[!is.na(temp$data_plain),]$time, format = "%Y-%m-%dT%H:%M:%S", tz = "UTC") + 3600
 
     return(df)
     })

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <link href='../www/metricsgraphics.css' rel='stylesheet' type='text/css'>
+
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+  <!-- <script src='../get.js'></script> -->
+
+
+  <script>
+
+  function httpGetAsync(theUrl, callback)
+  {
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.onreadystatechange = function() {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+              callback(xmlHttp.responseText);
+      }
+      xmlHttp.open("GET", theUrl, true); // true for asynchronous
+      xmlHttp.send(null);
+  }
+
+  var dataset;
+  var url = "http://www.thethingsnetwork.org/api/v0/nodes/02030592/";
+
+  httpGetAsync(url, function(d) {dataset = d;});
+  
+  </script>
